@@ -1,0 +1,26 @@
+{
+  "name": "assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuhammadAb98/PIAIC-Assignments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MuhammadAb98/PIAIC-Assignments/issues"
+  },
+  "homepage": "https://github.com/MuhammadAb98/PIAIC-Assignments#readme",
+  "dependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/inquirer": "^9.0.7",
+    "chalk": "^4.1.2",
+    "inquirer": "^9.2.12"
+  }
+}
