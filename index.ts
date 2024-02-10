@@ -1,87 +1,42 @@
-import inquirer from "inquirer";
-import chalk, { Chalk } from "chalk";
+import * as readline from 'readline';
 
-const performOperation = (
-  num1: number,
-  num2: number,
-  operator: string
-): number => {
-  switch (operator) {
-    case "+":
-      return num1 + num2;
-    case "-":
-      return num1 - num2;
-    case "*":
-      return num1 * num2;
-    case "/":
-      return num1 / num2;
-    default:
-      throw new Error("Invalid operator");
-  }
-};
+function generateRandomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-const displayResult = (result: number, operator: string): void => {
-  let color: Chalk = chalk.greenBright;
+function playNumberGuessingGame(): void {
+  const minNumber = 1;
+  const maxNumber = 100;
+  const secretNumber = generateRandomNumber(minNumber, maxNumber);
+  let numberOfTries = 0;
 
-  switch (operator) {
-    case "+":
-      color = chalk.green;
-      break;
-    case "-":
-      color = chalk.red;
-      break;
-    case "*":
-      color = chalk.yellow;
-      break;
-    case "/":
-      color = chalk.blue;
-      break;
-  }
-};
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
 
-const calculator = async (): Promise<void> => {
-  const questions = [
-    {
-      type: "input",
-      name: "num1",
-      message: "Enter the first number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "input",
-      name: "num2",
-      message: "Enter the second number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "list",
-      name: "operator",
-      message: "Select an operation:",
-      choices: ["+", "-", "*", "/"],
-    },
-  ];
+  console.log('Welcome to the Number Guessing Game!');
+  console.log(`I'm thinking of a number between ${minNumber} and ${maxNumber}. Can you guess it?\n`);
 
-  try {
-    inquirer
-      .prompt(questions)
-      .then((answers) => {
-        const { num1, num2, operator } = answers;
-        // console.log("answer", answers);
+  rl.on('line', (input: string) => {
+    const userGuess = parseInt(input, 10);
 
-        const result = performOperation(
-          parseFloat(num1),
-          parseFloat(num2),
-          operator
-        );
-        displayResult(result, operator);
-        console.log(result);
-      })
-      .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-  } catch (error: any) {
-    console.error(chalk.red("Error:", error.message));
-  }
-};
+    if (isNaN(userGuess)) {
+      console.log('Please enter a valid number.');
+      return;
+    }
 
-calculator();
+    numberOfTries++;
+
+    if (userGuess === secretNumber) {
+      console.log(`Congratulations! You guessed the correct number (${secretNumber}) in ${numberOfTries} tries.`);
+      rl.close();
+    } else if (userGuess < secretNumber) {
+      console.log('Too low. Try again!\n');
+    } else {
+      console.log('Too high. Try again!\n');
+    }
+  });
+}
+
+playNumberGuessingGame();

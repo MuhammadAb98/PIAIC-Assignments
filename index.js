@@ -1,77 +1,38 @@
-import inquirer from "inquirer";
-import chalk from "chalk";
-// Function to perform arithmetic operations
-const performOperation = (num1, num2, operator) => {
-    switch (operator) {
-        case "+":
-            return num1 + num2;
-        case "-":
-            return num1 - num2;
-        case "*":
-            return num1 * num2;
-        case "/":
-            return num1 / num2;
-        default:
-            throw new Error("Invalid operator");
-    }
-};
-// Function to display result with colored output
-const displayResult = (result, operator) => {
-    let color = chalk.greenBright;
-    switch (operator) {
-        case "+":
-            color = chalk.green;
-            break;
-        case "-":
-            color = chalk.red;
-            break;
-        case "*":
-            color = chalk.yellow;
-            break;
-        case "/":
-            color = chalk.blue;
-            break;
-    }
-    console.log(color(`Result: ${result}`));
-};
-// Main calculator function
-const calculator = async () => {
-    const questions = [
-        {
-            type: "input",
-            name: "num1",
-            message: "Enter the first number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "input",
-            name: "num2",
-            message: "Enter the second number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "list",
-            name: "operator",
-            message: "Select an operation:",
-            choices: ["+", "-", "*", "/"],
-            // loop: true,
-        },
-    ];
-    try {
-        inquirer
-            .prompt(questions)
-            .then((answers) => {
-            const { num1, num2, operator } = answers;
-            // console.log("answer", answers);
-            const result = performOperation(parseFloat(num1), parseFloat(num2), operator);
-            displayResult(result, operator);
-            console.log(result);
-        })
-            .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-    }
-    catch (error) {
-        console.error(chalk.red("Error:", error.message));
-    }
-};
-// Run the calculator
-calculator();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var readline = require("readline");
+function generateRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function playNumberGuessingGame() {
+    var minNumber = 1;
+    var maxNumber = 100;
+    var secretNumber = generateRandomNumber(minNumber, maxNumber);
+    var numberOfTries = 0;
+    var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    console.log('Welcome to the Number Guessing Game!');
+    console.log("I'm thinking of a number between ".concat(minNumber, " and ").concat(maxNumber, ". Can you guess it?\n"));
+    rl.on('line', function (input) {
+        var userGuess = parseInt(input, 10);
+        if (isNaN(userGuess)) {
+            console.log('Please enter a valid number.');
+            return;
+        }
+        numberOfTries++;
+        if (userGuess === secretNumber) {
+            console.log("Congratulations! You guessed the correct number (".concat(secretNumber, ") in ").concat(numberOfTries, " tries."));
+            rl.close();
+        }
+        else if (userGuess < secretNumber) {
+            console.log('Too low. Try again!\n');
+        }
+        else {
+            console.log('Too high. Try again!\n');
+        }
+    });
+}
+// Run the game
+playNumberGuessingGame();
