@@ -1,87 +1,90 @@
-import inquirer from "inquirer";
-import chalk, { Chalk } from "chalk";
+import * as readline from 'readline';
 
-const performOperation = (
-  num1: number,
-  num2: number,
-  operator: string
-): number => {
-  switch (operator) {
-    case "+":
-      return num1 + num2;
-    case "-":
-      return num1 - num2;
-    case "*":
-      return num1 * num2;
-    case "/":
-      return num1 / num2;
-    default:
-      throw new Error("Invalid operator");
+class Todo {
+  private tasks: string[];
+
+  constructor() {
+    this.tasks = [];
   }
-};
 
-const displayResult = (result: number, operator: string): void => {
-  let color: Chalk = chalk.greenBright;
-
-  switch (operator) {
-    case "+":
-      color = chalk.green;
-      break;
-    case "-":
-      color = chalk.red;
-      break;
-    case "*":
-      color = chalk.yellow;
-      break;
-    case "/":
-      color = chalk.blue;
-      break;
+  addTask(task: string): void {
+    this.tasks.push(task);
+    console.log(`Task "${task}" added to the Todo list.`);
   }
-};
 
-const calculator = async (): Promise<void> => {
-  const questions = [
-    {
-      type: "input",
-      name: "num1",
-      message: "Enter the first number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "input",
-      name: "num2",
-      message: "Enter the second number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "list",
-      name: "operator",
-      message: "Select an operation:",
-      choices: ["+", "-", "*", "/"],
-    },
-  ];
-
-  try {
-    inquirer
-      .prompt(questions)
-      .then((answers) => {
-        const { num1, num2, operator } = answers;
-        // console.log("answer", answers);
-
-        const result = performOperation(
-          parseFloat(num1),
-          parseFloat(num2),
-          operator
-        );
-        displayResult(result, operator);
-        console.log(result);
-      })
-      .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-  } catch (error: any) {
-    console.error(chalk.red("Error:", error.message));
+  markTaskAsComplete(taskIndex: number): void {
+    if (taskIndex >= 0 && taskIndex < this.tasks.length) {
+      const completedTask = this.tasks.splice(taskIndex, 1);
+      console.log(`Task "${completedTask}" marked as complete.`);
+    } else {
+      console.log('Invalid task index.');
+    }
   }
-};
 
-calculator();
+  displayTasks(): void {
+    if (this.tasks.length === 0) {
+      console.log('No tasks in the Todo list.');
+    } else {
+      console.log('\nTodo List:');
+      this.tasks.forEach((task, index) => {
+        console.log(`${index + 1}. ${task}`);
+      });
+    }
+  }
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Main TodoList program
+function runTodoList() {
+  const todoList = new Todo();
+
+  console.log('Welcome to the Todo List App!\n');
+
+  function promptUser(): void {
+    console.log('Todo List Menu:');
+    console.log('1. Add Task');
+    console.log('2. Mark Task as Complete');
+    console.log('3. View Tasks');
+    console.log('4. Exit');
+
+    rl.question('Select an option (1-4): ', (input: string) => {
+      const option = parseInt(input, 10);
+
+      switch (option) {
+        case 1:
+          rl.question('Enter the task to add: ', (task: string) => {
+            todoList.addTask(task);
+            promptUser();
+          });
+          break;
+        case 2:
+          rl.question('Enter the task index to mark as complete: ', (indexInput: string) => {
+            const taskIndex = parseInt(indexInput, 10) - 1;
+            todoList.markTaskAsComplete(taskIndex);
+            promptUser();
+          });
+          break;
+        case 3:
+          todoList.displayTasks();
+          promptUser();
+          break;
+        case 4:
+          console.log('Thank you for using the Todo List App. Goodbye!');
+          rl.close();
+          break;
+        default:
+          console.log('Invalid option. Please choose a number between 1 and 4.');
+          promptUser();
+      }
+    });
+  }
+
+  promptUser();
+}
+
+// Run the TodoList program
+runTodoList();
