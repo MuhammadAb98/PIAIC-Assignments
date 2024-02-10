@@ -1,77 +1,100 @@
-import inquirer from "inquirer";
-import chalk from "chalk";
-// Function to perform arithmetic operations
-const performOperation = (num1, num2, operator) => {
-    switch (operator) {
-        case "+":
-            return num1 + num2;
-        case "-":
-            return num1 - num2;
-        case "*":
-            return num1 * num2;
-        case "/":
-            return num1 / num2;
-        default:
-            throw new Error("Invalid operator");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var readline = require("readline");
+var Student = /** @class */ (function () {
+    function Student(name, grade) {
+        Student.studentCount++;
+        this.id = Student.studentCount;
+        this.name = name;
+        this.grade = grade;
     }
-};
-// Function to display result with colored output
-const displayResult = (result, operator) => {
-    let color = chalk.greenBright;
-    switch (operator) {
-        case "+":
-            color = chalk.green;
-            break;
-        case "-":
-            color = chalk.red;
-            break;
-        case "*":
-            color = chalk.yellow;
-            break;
-        case "/":
-            color = chalk.blue;
-            break;
+    Student.prototype.getDetails = function () {
+        return "ID: ".concat(this.id, ", Name: ").concat(this.name, ", Grade: ").concat(this.grade);
+    };
+    Student.studentCount = 0;
+    return Student;
+}());
+var StudentManagementSystem = /** @class */ (function () {
+    function StudentManagementSystem() {
+        this.students = [];
     }
-    console.log(color(`Result: ${result}`));
-};
-// Main calculator function
-const calculator = async () => {
-    const questions = [
-        {
-            type: "input",
-            name: "num1",
-            message: "Enter the first number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "input",
-            name: "num2",
-            message: "Enter the second number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "list",
-            name: "operator",
-            message: "Select an operation:",
-            choices: ["+", "-", "*", "/"],
-            // loop: true,
-        },
-    ];
-    try {
-        inquirer
-            .prompt(questions)
-            .then((answers) => {
-            const { num1, num2, operator } = answers;
-            // console.log("answer", answers);
-            const result = performOperation(parseFloat(num1), parseFloat(num2), operator);
-            displayResult(result, operator);
-            console.log(result);
-        })
-            .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
+    StudentManagementSystem.prototype.addStudent = function (name, grade) {
+        var newStudent = new Student(name, grade);
+        this.students.push(newStudent);
+        console.log("Student added: ".concat(newStudent.getDetails()));
+    };
+    StudentManagementSystem.prototype.viewStudentDetails = function (studentId) {
+        var student = this.findStudentById(studentId);
+        if (student) {
+            console.log("Student Details: ".concat(student.getDetails()));
+        }
+        else {
+            console.log('Student not found.');
+        }
+    };
+    StudentManagementSystem.prototype.listAllStudents = function () {
+        if (this.students.length === 0) {
+            console.log('No students in the system.');
+        }
+        else {
+            console.log('\nAll Students:');
+            this.students.forEach(function (student) {
+                console.log(student.getDetails());
+            });
+        }
+    };
+    StudentManagementSystem.prototype.findStudentById = function (studentId) {
+        return this.students.find(function (student) { return student.id === studentId; });
+    };
+    return StudentManagementSystem;
+}());
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+// Main Student Management System program
+function runStudentManagementSystem() {
+    var studentSystem = new StudentManagementSystem();
+    console.log('Welcome to the Student Management System!\n');
+    function promptUser() {
+        console.log('Student Management Menu:');
+        console.log('1. Add Student');
+        console.log('2. View Student Details');
+        console.log('3. List All Students');
+        console.log('4. Exit');
+        rl.question('Select an option (1-4): ', function (input) {
+            var option = parseInt(input, 10);
+            switch (option) {
+                case 1:
+                    rl.question('Enter the student name: ', function (name) {
+                        rl.question('Enter the student grade: ', function (grade) {
+                            studentSystem.addStudent(name, grade);
+                            promptUser();
+                        });
+                    });
+                    break;
+                case 2:
+                    rl.question('Enter the student ID to view details: ', function (idInput) {
+                        var studentId = parseInt(idInput, 10);
+                        studentSystem.viewStudentDetails(studentId);
+                        promptUser();
+                    });
+                    break;
+                case 3:
+                    studentSystem.listAllStudents();
+                    promptUser();
+                    break;
+                case 4:
+                    console.log('Thank you for using the Student Management System. Goodbye!');
+                    rl.close();
+                    break;
+                default:
+                    console.log('Invalid option. Please choose a number between 1 and 4.');
+                    promptUser();
+            }
+        });
     }
-    catch (error) {
-        console.error(chalk.red("Error:", error.message));
-    }
-};
-// Run the calculator
-calculator();
+    promptUser();
+}
+// Run the Student Management System program
+runStudentManagementSystem();
