@@ -1,87 +1,53 @@
-import inquirer from "inquirer";
-import chalk, { Chalk } from "chalk";
+class Bank {
+  private accounts: { [accountNumber: string]: number };
 
-const performOperation = (
-  num1: number,
-  num2: number,
-  operator: string
-): number => {
-  switch (operator) {
-    case "+":
-      return num1 + num2;
-    case "-":
-      return num1 - num2;
-    case "*":
-      return num1 * num2;
-    case "/":
-      return num1 / num2;
-    default:
-      throw new Error("Invalid operator");
+  constructor() {
+    this.accounts = {};
   }
-};
 
-const displayResult = (result: number, operator: string): void => {
-  let color: Chalk = chalk.greenBright;
-
-  switch (operator) {
-    case "+":
-      color = chalk.green;
-      break;
-    case "-":
-      color = chalk.red;
-      break;
-    case "*":
-      color = chalk.yellow;
-      break;
-    case "/":
-      color = chalk.blue;
-      break;
+  createAccount(accountNumber: string, initialBalance: number): void {
+    if (!this.accounts[accountNumber]) {
+      this.accounts[accountNumber] = initialBalance;
+      console.log(`Account ${accountNumber} created with initial balance: $${initialBalance}`);
+    } else {
+      console.log(`Account ${accountNumber} already exists.`);
+    }
   }
-};
 
-const calculator = async (): Promise<void> => {
-  const questions = [
-    {
-      type: "input",
-      name: "num1",
-      message: "Enter the first number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "input",
-      name: "num2",
-      message: "Enter the second number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "list",
-      name: "operator",
-      message: "Select an operation:",
-      choices: ["+", "-", "*", "/"],
-    },
-  ];
-
-  try {
-    inquirer
-      .prompt(questions)
-      .then((answers) => {
-        const { num1, num2, operator } = answers;
-        // console.log("answer", answers);
-
-        const result = performOperation(
-          parseFloat(num1),
-          parseFloat(num2),
-          operator
-        );
-        displayResult(result, operator);
-        console.log(result);
-      })
-      .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-  } catch (error: any) {
-    console.error(chalk.red("Error:", error.message));
+  deposit(accountNumber: string, amount: number): void {
+    if (this.accounts[accountNumber] !== undefined) {
+      this.accounts[accountNumber] += amount;
+      console.log(`$${amount} deposited into account ${accountNumber}. New balance: $${this.accounts[accountNumber]}`);
+    } else {
+      console.log(`Account ${accountNumber} does not exist.`);
+    }
   }
-};
 
-calculator();
+  withdraw(accountNumber: string, amount: number): void {
+    if (this.accounts[accountNumber] !== undefined) {
+      if (amount <= this.accounts[accountNumber]) {
+        this.accounts[accountNumber] -= amount;
+        console.log(`$${amount} withdrawn from account ${accountNumber}. New balance: $${this.accounts[accountNumber]}`);
+      } else {
+        console.log(`Insufficient funds in account ${accountNumber}.`);
+      }
+    } else {
+      console.log(`Account ${accountNumber} does not exist.`);
+    }
+  }
+
+  checkBalance(accountNumber: string): void {
+    if (this.accounts[accountNumber] !== undefined) {
+      console.log(`Account ${accountNumber} balance: $${this.accounts[accountNumber]}`);
+    } else {
+      console.log(`Account ${accountNumber} does not exist.`);
+    }
+  }
+}
+
+// Run the Bank
+const bank = new Bank();
+bank.createAccount("12345", 1000);
+bank.deposit("12345", 500);
+bank.withdraw("12345", 200);
+bank.checkBalance("12345");
