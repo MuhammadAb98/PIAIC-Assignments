@@ -1,87 +1,47 @@
-import inquirer from "inquirer";
-import chalk, { Chalk } from "chalk";
+import * as readline from 'readline';
 
-const performOperation = (
-  num1: number,
-  num2: number,
-  operator: string
-): number => {
-  switch (operator) {
-    case "+":
-      return num1 + num2;
-    case "-":
-      return num1 - num2;
-    case "*":
-      return num1 * num2;
-    case "/":
-      return num1 / num2;
-    default:
-      throw new Error("Invalid operator");
+class TextAnalyzer {
+  private inputText: string;
+
+  constructor() {
+    this.inputText = '';
   }
-};
 
-const displayResult = (result: number, operator: string): void => {
-  let color: Chalk = chalk.greenBright;
-
-  switch (operator) {
-    case "+":
-      color = chalk.green;
-      break;
-    case "-":
-      color = chalk.red;
-      break;
-    case "*":
-      color = chalk.yellow;
-      break;
-    case "/":
-      color = chalk.blue;
-      break;
+  setInputText(text: string): void {
+    this.inputText = text;
   }
-};
 
-const calculator = async (): Promise<void> => {
-  const questions = [
-    {
-      type: "input",
-      name: "num1",
-      message: "Enter the first number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "input",
-      name: "num2",
-      message: "Enter the second number:",
-      validate: (value: string) =>
-        !isNaN(Number(value)) || "Please enter a valid number",
-    },
-    {
-      type: "list",
-      name: "operator",
-      message: "Select an operation:",
-      choices: ["+", "-", "*", "/"],
-    },
-  ];
-
-  try {
-    inquirer
-      .prompt(questions)
-      .then((answers) => {
-        const { num1, num2, operator } = answers;
-        // console.log("answer", answers);
-
-        const result = performOperation(
-          parseFloat(num1),
-          parseFloat(num2),
-          operator
-        );
-        displayResult(result, operator);
-        console.log(result);
-      })
-      .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-  } catch (error: any) {
-    console.error(chalk.red("Error:", error.message));
+  countWords(): number {
+    const words = this.inputText.split(/\s+/).filter(word => word.length > 0);
+    return words.length;
   }
-};
 
-calculator();
+  countCharacters(): number {
+    return this.inputText.length;
+  }
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Main Text Analyzer program
+function runTextAnalyzer() {
+  const textAnalyzer = new TextAnalyzer();
+
+  console.log('Welcome to the Text Analyzer!\n');
+
+  rl.question('Enter a text to analyze: ', (input: string) => {
+    textAnalyzer.setInputText(input);
+
+    console.log('\nAnalysis Results:');
+    console.log(`Words: ${textAnalyzer.countWords()}`);
+    console.log(`Characters: ${textAnalyzer.countCharacters()}`);
+
+    rl.close();
+  });
+}
+
+// Run the Text Analyzer program
+runTextAnalyzer();

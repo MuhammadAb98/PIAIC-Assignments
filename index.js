@@ -1,77 +1,37 @@
-import inquirer from "inquirer";
-import chalk from "chalk";
-// Function to perform arithmetic operations
-const performOperation = (num1, num2, operator) => {
-    switch (operator) {
-        case "+":
-            return num1 + num2;
-        case "-":
-            return num1 - num2;
-        case "*":
-            return num1 * num2;
-        case "/":
-            return num1 / num2;
-        default:
-            throw new Error("Invalid operator");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var readline = require("readline");
+var TextAnalyzer = /** @class */ (function () {
+    function TextAnalyzer() {
+        this.inputText = '';
     }
-};
-// Function to display result with colored output
-const displayResult = (result, operator) => {
-    let color = chalk.greenBright;
-    switch (operator) {
-        case "+":
-            color = chalk.green;
-            break;
-        case "-":
-            color = chalk.red;
-            break;
-        case "*":
-            color = chalk.yellow;
-            break;
-        case "/":
-            color = chalk.blue;
-            break;
-    }
-    console.log(color(`Result: ${result}`));
-};
-// Main calculator function
-const calculator = async () => {
-    const questions = [
-        {
-            type: "input",
-            name: "num1",
-            message: "Enter the first number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "input",
-            name: "num2",
-            message: "Enter the second number:",
-            validate: (value) => !isNaN(Number(value)) || "Please enter a valid number",
-        },
-        {
-            type: "list",
-            name: "operator",
-            message: "Select an operation:",
-            choices: ["+", "-", "*", "/"],
-            // loop: true,
-        },
-    ];
-    try {
-        inquirer
-            .prompt(questions)
-            .then((answers) => {
-            const { num1, num2, operator } = answers;
-            // console.log("answer", answers);
-            const result = performOperation(parseFloat(num1), parseFloat(num2), operator);
-            displayResult(result, operator);
-            console.log(result);
-        })
-            .catch((err) => console.error(chalk.yellowBright("Error:", err.message)));
-    }
-    catch (error) {
-        console.error(chalk.red("Error:", error.message));
-    }
-};
-// Run the calculator
-calculator();
+    TextAnalyzer.prototype.setInputText = function (text) {
+        this.inputText = text;
+    };
+    TextAnalyzer.prototype.countWords = function () {
+        var words = this.inputText.split(/\s+/).filter(function (word) { return word.length > 0; });
+        return words.length;
+    };
+    TextAnalyzer.prototype.countCharacters = function () {
+        return this.inputText.length;
+    };
+    return TextAnalyzer;
+}());
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+// Main Text Analyzer program
+function runTextAnalyzer() {
+    var textAnalyzer = new TextAnalyzer();
+    console.log('Welcome to the Text Analyzer!\n');
+    rl.question('Enter a text to analyze: ', function (input) {
+        textAnalyzer.setInputText(input);
+        console.log('\nAnalysis Results:');
+        console.log("Words: ".concat(textAnalyzer.countWords()));
+        console.log("Characters: ".concat(textAnalyzer.countCharacters()));
+        rl.close();
+    });
+}
+// Run the Text Analyzer program
+runTextAnalyzer();
